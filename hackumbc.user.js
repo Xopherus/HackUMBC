@@ -102,6 +102,10 @@ function addToolBar() {
 }
 
 function startLookup() {
+    // load progress
+    var progress = JSON.parse(localStorage["progression"])
+    if(progress != undefined)
+        //use default progress
         
     inLang = document.getElementById('selInLang').value
     outLang = document.getElementById('selOutLang').value
@@ -112,6 +116,9 @@ function startLookup() {
     document.getElementById('selInLang').value = inLang
     document.getElementById('selOutLang').value = outLang
     document.getElementById('prog').value = prog
+    
+      // save progress
+    localStorage["progression"] = JSON.stringify(prog) 
     
     DOC_SAVE = $('body').clone()[0]
         
