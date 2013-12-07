@@ -1,5 +1,4 @@
 // ==UserScript==
-<<<<<<< HEAD
 // @name       hackUMBC Text Mining
 // @namespace  http://www.umbc.edu
 // @version    0.1
@@ -9,168 +8,16 @@
 // ==/UserScript==
 
 var BEGINNER = .1
-var PHRASE_LENGTH = 6
-=======
-// @name       		hackUMBC Langauge Plugin
-// @namespace  		http://www.umbc.edu
-// @version    		0.1
-// @description  	Langauge Plugin
-// @include      	*
-// @copyright  		2013, Robert Jackson, Christopher Raborg, Zach Hisley
-// @require       	http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.js
-// @grant			GM_xmlhttpRequest
-// @grant			none
-// ==/UserScript==
-
-var BEGINNER = .1
-var PHRASE_LENGTH = 10
-var NUM_SUBS = 25
-var outLang = "es"
-var inLang = "en"
-
-var link = document.createElement('link')
-var script1 = document.createElement('script')
-var script2 = document.createElement('script')
-
-link.rel = 'stylesheet'
-link.href = 'http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css'
-link.type = 'text/css'
-
-script1.src = 'http://code.jquery.com/jquery-1.9.1.js'
-script2.src = 'http://code.jquery.com/ui/1.10.3/jquery-ui.js'
-
-document.head.insertBefore(link, null)
-document.head.insertBefore(script1, null)
-document.head.insertBefore(script2, null)
->>>>>>> 76ec646bd52e00bfdf8dc391c9f81a6ef346c278
+var PHRASE_LENGTH = 3
 
 var regexSplit = new RegExp(/[,\\.\\!\\?]/)
+var initPhraseArr = document.getElementsByTagName('html')[0].innerHTML.replace(/(<([^>]+)>)/ig,"").split(regexSplit)
 
-var initPhraseArr = document.getElementsByTagName('body')[0].innerHTML.replace(/(<([^>]+)>)/ig, "").split(regexSplit)
-var sortedArr = contentMine(initPhraseArr)
-var topPhraseArr = new Array(NUM_SUBS)
-var finalPhraseArr = new Array(NUM_SUBS);
-var translationArr = new Array(NUM_SUBS);
-
-for (var i = 0; i < NUM_SUBS; i++) {
- 
-   topPhraseArr[i] = sortedArr[i][0]
-   finalPhraseArr[i] = encodeURI(sortedArr[i][0])
-    
-}
-
-lookupPhrases(finalPhraseArr, translationArr)
-
-
-function lookupPhrases(arr, tArr) {
-    for (var i = 0; i < arr.length; i++) {
-
-        GM_xmlhttpRequest({
-            method: "GET",
-            url: "http://translate.google.com/translate_a/t?client=p&text=" + arr[i] + "&sl=" + inLang + "&tl=" + outLang,
-            onload: (function (arr, tArr, i) {
-
-                return function (response) {
-
-                    var json = JSON.parse(response.responseText)
-
-                    var transString = ""
-
-                    json.sentences.forEach(function (i) {
-
-                        transString = transString + i.trans
-
-                    })
-
-                    tArr[i] = transString
-
-                    modifyPage(finalPhraseArr[i], tArr[i], i)
-
-                }
-
-            })(arr, tArr, i)
-
-        })
-
-    }
-
-}
-
-
-function modifyPage(phrase, tPhrase, i) {
-
-    var diagElem = document.createElement('div')
-    diagElem.id = 'transDialog' + i
-    diagElem.title = 'Translation Toolkit'
-
-    document.body.insertBefore(diagElem, null)
-
-	replaceTextNodes(document.getElementsByTagName('body')[0], phrase, tPhrase, i)
-    
-}
-
-function replaceTextNodes(node, phrase, tPhrase, idx) {
-    
-    var newSpan = '<span style="text-decoration: underline" onmouseover="this.style.backgroundColor=&quot;yellow&quot;\" onmouseout="this.style.backgroundColor=null" onclick="$(&quot;#transDialog' + idx + '&quot;).dialog()">' + tPhrase + '</span>'
-
-    if (node.nodeType == 3) {
-             
-		if (!/^\s*$/.test(node.data)) {
-                       
-			var newNode = document.createElement('span')
-			newNode.innerHTML = node.data.toString().replace(new RegExp("\\b" + phrase + "\\b", "ig"), newSpan)
-
-			node.parentNode.replaceChild(newNode, node)
-                       
-    	}
-
-	}      
-	else if (node.hasChildNodes()) {
-		for (var i = 0, len = node.childNodes.length; i < len; ++i) {
-			replaceTextNodes(node.childNodes[i], phrase, tPhrase, idx);
-		}
-	}
-}
-        
-
-            /*if (!node.childNodes[i].hasChildNodes()) {
-                if (node.childNodes[i].nodeType == 3) {
-                    
-                    if (node.childNodes[i].data.toString().indexOf(phrase) != -1) {
-                     
-                        console.log(node)
-                        
-
-                        
-                      /*  var newSpan = document.createElement('span')
-                        newSpan.id = 'transInsert' + idx
-                        newSpan.setAttribute('style','text-decoration: underline')
-                        newSpan.setAttribute('onmouseover', 'this.style.backgroundColor = \'yellow\'')
-                        newSpan.setAttribute('onmouseout', 'this.style.backgroundColor = null')
-                        newSpan.setAttribute('onclick', '$("#transDialog' + idx + '").dialog()')
-                        newSpan.innerHTML = tPhrase
-                        
-                        var newNode = document.createElement('span')
-                        
-                        node.replaceChild(newNode, node.childNodes[i])
-                        
-                    }
-                                        
-                }
-                else {
-                 
-                    if (node.childNodes[i].innerHTML.toString().indexOf(phrase) != -1) {
-                        
-                        node.childNodes[i].innerHTML = node.childNodes[i].innerHTML.toString().replace(phrase, newSpan)
-                        
-                    }
-                    
-                }
-            }*/
+contentMine(initPhraseArr)
 
 function contentMine(chosenWords){
     // These words fill not have an associated frequency
-    var stopWords = ["a", "the", "to"]
+    var stopWords = [] //["a", "the", "to"]
     
     var chosenWordsSplit = []
     var wordList = []
@@ -179,8 +26,8 @@ function contentMine(chosenWords){
  
     // Preprocessing
     for(i in chosenWords){
-        // Remove dashes, colons, semicolons
-        var words = chosenWords[i].toLowerCase().replace(/[-;:]/ig, " ").trim().split(" ")
+        // Remove dashes, colons, semicolons, numbers
+        var words = chosenWords[i].toLowerCase().replace(/[-;:\d+]/ig, " ").trim().split(" ")
       
         for(j in words){
             // Remove apostrophes, line breaks
@@ -211,18 +58,19 @@ function contentMine(chosenWords){
      
     // Generate a list of sorted phrases by score (more frequently used words = higher score)    
     var sortablePhrases = scorePhrases(generatePhrases(chosenWordsSplit, PHRASE_LENGTH), sortable)
+   
+    // need to evaluate the "goodness" of fragments, parsing of nouns/verbs/adjectives?    
+    var sortedBigrams = generateBigrams(chosenWordsSplit, sortable, 2)
+	
+    var ngrams = JSON.parse(localStorage["ngrams"])
     
-<<<<<<< HEAD
-    for(i in sortablePhrases)
-        console.log(sortablePhrases[i][0] + " : " + sortablePhrases[i][1])
-        
+    for(i in sortedBigrams)
+        console.log(sortedBigrams[i][0] + ":" + sortedBigrams[i][1])
+    
     return sortablePhrases
-=======
-  //  for(i in sortablePhrases)
-        //console.log(sortablePhrases[i][0] + " : " + sortablePhrases[i][1])
-    return sortable
->>>>>>> 76ec646bd52e00bfdf8dc391c9f81a6ef346c278
 }
+
+
 
 // Generates a list of the best phrases to begin translating, based on how many frequent words are in the phrase
 function scorePhrases(phrases, freqWords){
@@ -231,15 +79,8 @@ function scorePhrases(phrases, freqWords){
     for(var i=0; i < phrases.length; i++){
         var score = 0
         for(w in freqWords){
-<<<<<<< HEAD
             // count up how many times it appears
             if(phrases[i].indexOf(freqWords[w][0]) != -1)
-=======
-            if(phrases[i].indexOf(freqWords[w][0]) != -1){
-                // count up how many times it appears
-                var count = countWordInPhrase(phrases[i], freqWords[w][0])
-                //console.log(count)
->>>>>>> 76ec646bd52e00bfdf8dc391c9f81a6ef346c278
                 score = score + (freqWords[w][1] * countWordInPhrase(phrases[i], freqWords[w][0]))
         }
         phraseScores[i] = score
@@ -274,6 +115,79 @@ function generatePhrases(words, phraseSize){
     }
     
     return phrases
+}
+
+// Generates ngrams
+function generateBigrams(words, wordFreq, n){
+    // this needs to be in local storage to improve ngrams algorithm
+    if(localStorage["ngrams"] != undefined)
+        var ngrams = JSON.parse(localStorage["ngrams"])
+    else
+        var ngrams = []
+        
+    var probabilities = []
+    
+    for(var i = 0; i < words.length; i++){
+        var ngram = []
+            
+        for(var j = 0; j < n; j++)
+            if(i + j < words.length)
+                ngram.push(words[i + j])
+                        
+        if(ngrams.indexOf(ngram) == -1){        
+            // calculate maximum likelihood of ngram (C-ngram / C-ngram\lastword)
+            count = groupedWordFreq(words, ngram)
+            probability = count / groupedWordFreq(words, ngram[0])
+            probabilities.push([ngram, probability])
+            
+            ngrams.push([ngram, count])
+        }
+    }
+    
+    // store ngrams to local storage after updating
+    localStorage["ngrams"] = JSON.stringify(ngrams)
+    
+    probabilities.sort(function(a, b){ return b[1] - a[1]})
+    return probabilities
+}
+
+/*
+function groupedWordPhrases(words, freqWords, n){
+    var phrases = []
+    
+    for(i in freqWords){
+        for(j in words){
+            var phrase = []
+            //console.log(wordFrequencies[j][0])
+            if(words[j] == freqWords[i][0]){
+               // look behind to get a word
+               if(j - 1 >= 0)
+                   phrase.push(words[j-1])
+               //look ahead to the next word 
+               if(j + 1 < words.length)
+               	   phrase.push(words[j+1])
+                   
+               phrases.push(phrase)
+            }
+        }
+    }   
+    return phrases;
+}*/
+
+function groupedWordFreq(words, tuple){
+    count = 1
+    
+    for(var i=0; i < words.length - (tuple.length-1); i++){
+        var flag = true
+        for(var j=0; j < tuple.length; j++)
+            if(i+j < words.length)
+     			if(words[i+j] != tuple[i+j])
+            		flag = false
+
+        if(flag)
+            count++
+    }
+    return count
 }
 
 // Sorts word frequency lists by tying words and freq together in one object
