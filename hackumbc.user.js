@@ -48,8 +48,10 @@ transDialogHolder.style.height = 0
 transDialogHolder.id = 'transDialogHolder'
 document.body.insertBefore(transDialogHolder, null)
 
-addToolBar()
 addSpans(document.body)
+addToolBar()
+
+DOC_SAVE = $('body').clone()[0]
 
 function addSpans(node) {
  
@@ -71,9 +73,7 @@ function addSpans(node) {
 			addSpans(node.childNodes[i]);
 		}
     }             
-    
-   DOC_SAVE = $('body').clone()[0]
-    
+        
 }
 
 function addToolBar() {
@@ -96,21 +96,25 @@ function addToolBar() {
     document.body.style.marginTop = 30
     document.body.insertBefore(toolbar, null)    
     
-    document.getElementById("goButton").addEventListener("click", startLookup);
+    document.getElementById("goButton").addEventListener("click", startLookup, false);
     
 }
 
 function startLookup() {
-    
-	document.body = DOC_SAVE
-    document.getElementById("goButton").addEventListener("click", startLookup);
-
-
+        
     inLang = document.getElementById('selInLang').value
     outLang = document.getElementById('selOutLang').value
     prog = document.getElementById('prog').value
     
-    var numSwaps = Math.ceil((prog / 1000)^2 * sortedArr.length)
+    document.body = DOC_SAVE
+
+    document.getElementById('selInLang').value = inLang
+    document.getElementById('selOutLang').value = outLang
+    document.getElementById('prog').value = prog
+    
+    DOC_SAVE = $('body').clone()[0]
+        
+    var numSwaps = Math.ceil(((prog / 1000) * (prog / 1000)) * sortedArr.length)
     
     console.log(numSwaps)
     
@@ -124,14 +128,11 @@ function startLookup() {
   	 	finalPhraseArr[i] = encodeURI(sortedArr[i][0])
     
 	}
-
-      //  document.body.removeChild(document.getElementById("globalToolbar"))
-    //document.body.style.marginTop = 0
             
     lookupPhrases(finalPhraseArr, translationArr)
     
-
-    
+    document.getElementById("goButton").addEventListener("click", startLookup, false);
+        
 }
 
 
