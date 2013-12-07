@@ -84,7 +84,7 @@ function lookupPhrases(arr, tArr) {
 
     				tArr[i] = transString
                                     
-                    modifyPage(finalPhraseArr[i], tArr[i])
+                    modifyPage(finalPhraseArr[i], tArr[i], i)
                
                }
                
@@ -97,10 +97,12 @@ function lookupPhrases(arr, tArr) {
 }
 
 
-function modifyPage(phrase, tPhrase) {
+function modifyPage(phrase, tPhrase, i) {
     
     console.log(phrase + " " + tPhrase)
     
-	document.getElementsByTagName('html')[0].innerHTML = document.getElementsByTagName('html')[0].innerHTML.replace(phrase, tPhrase)
+    var divElem = '<span id=\"transInsert' + i + '\" style=\"text-decoration: underline;\" onmouseover=\"alert(' + i + ')\">' + tPhrase + '</span>' 
+    
+	document.getElementsByTagName('html')[0].innerHTML = document.getElementsByTagName('html')[0].innerHTML.replace(phrase, divElem)
     
 }
