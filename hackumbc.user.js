@@ -7,7 +7,21 @@
 // @copyright  2013, Robert Jackson, Christopher Raborg, Zach Hisley
 // ==/UserScript==
 
-var chosenWords = document.getElementsByTagName('html')[0].innerHTML.replace(/(<([^>]+)>)/ig,"").split(" ")
+var regexSplit = new RegExp(/[,\\.\\!\\?]/)
 
-console.log(chosenWords.length);
-console.log(chosenWords[0]);
+var chosenWords = document.getElementsByTagName('html')[0].innerHTML.replace(/(<([^>]+)>)/ig,"").split(regexSplit)
+var translatedWords = new Array(chosenWords.length)
+
+setupTranslations()
+
+function setupTranslations() {
+    
+    var tempString = ""
+
+    chosenWords.forEach(function(i) {
+        tempString = tempString + i + "\n"
+    })    
+    
+    console.log(encodeURIComponent(tempString))
+    
+}
