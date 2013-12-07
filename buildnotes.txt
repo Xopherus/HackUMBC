@@ -1,0 +1,1 @@
+scan main div container w/ text mining algorithm
