@@ -11,8 +11,8 @@
 // @run-at			document-end
 // ==/UserScript==
 
-var GAIN = 100
-var LOSS = 200
+var GAIN = 50
+var LOSS = 100
 
 if (localStorage.progress == undefined) {
  
@@ -27,7 +27,7 @@ var PHRASE_LENGTH = 10
 var NUM_SUBS = 25
 var outLang = "es"
 var inLang = "en"
-var prog = (parseInt(localStorage.progress) + GAIN) % 1000
+var prog = Math.min(parseInt(localStorage.progress) + GAIN, 1000)
 var rev = false
 console.log(prog)
 var link = document.createElement('link')
