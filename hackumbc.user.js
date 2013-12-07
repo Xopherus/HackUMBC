@@ -8,7 +8,17 @@
 // @require       	http://ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.js
 // @grant			GM_xmlhttpRequest
 // @grant			none
+// @run-at			document-end
 // ==/UserScript==
+
+var GAIN = 100
+var LOSS = 200
+
+if (localStorage.progress == undefined) {
+ 
+    localStorage.progress = 75
+    
+}
 
 var DOC_SAVE
 
@@ -17,9 +27,9 @@ var PHRASE_LENGTH = 10
 var NUM_SUBS = 25
 var outLang = "es"
 var inLang = "en"
-var prog = 10
+var prog = (parseInt(localStorage.progress) + GAIN) % 1000
 var rev = false
-
+console.log(prog)
 var link = document.createElement('link')
 var script1 = document.createElement('script')
 var script2 = document.createElement('script')
@@ -92,7 +102,7 @@ function addToolBar() {
 	toolbar.style.verticalAlign="middle"
     toolbar.innerHTML = 'Input Langauge: <select id="selInLang" tabindex=0><option SELECTED value=EN>English</option><option value=es>Spanish</option><option value=ru>Russian</option><option value=separator disabled>&#8212;</option><option value=af>Afrikaans</option><option value=sq>Albanian</option><option value=ar>Arabic</option><option value=hy>Armenian</option><option value=az>Azerbaijani</option><option value=eu>Basque</option><option value=be>Belarusian</option><option value=bn>Bengali</option><option value=bs>Bosnian</option><option value=bg>Bulgarian</option><option value=ca>Catalan</option><option value=ceb>Cebuano</option><option value=zh-CN>Chinese (Simplified)</option><option value=zh-TW>Chinese (Traditional)</option><option value=hr>Croatian</option><option value=cs>Czech</option><option value=da>Danish</option><option value=nl>Dutch</option><option value=en>English</option><option value=eo>Esperanto</option><option value=et>Estonian</option><option value=tl>Filipino</option><option value=fi>Finnish</option><option value=fr>French</option><option value=gl>Galician</option><option value=ka>Georgian</option><option value=de>German</option><option value=el>Greek</option><option value=gu>Gujarati</option><option value=ht>Haitian Creole</option><option value=iw>Hebrew</option><option value=hi>Hindi</option><option value=hmn>Hmong</option><option value=hu>Hungarian</option><option value=is>Icelandic</option><option value=id>Indonesian</option><option value=ga>Irish</option><option value=it>Italian</option><option value=ja>Japanese</option><option value=jw>Javanese</option><option value=kn>Kannada</option><option value=km>Khmer</option><option value=ko>Korean</option><option value=lo>Lao</option><option value=la>Latin</option><option value=lv>Latvian</option><option value=lt>Lithuanian</option><option value=mk>Macedonian</option><option value=ms>Malay</option><option value=mt>Maltese</option><option value=mr>Marathi</option><option value=no>Norwegian</option><option value=fa>Persian</option><option value=pl>Polish</option><option value=pt>Portuguese</option><option value=ro>Romanian</option><option value=ru>Russian</option><option value=sr>Serbian</option><option value=sk>Slovak</option><option value=sl>Slovenian</option><option value=es>Spanish</option><option value=sw>Swahili</option><option value=sv>Swedish</option><option value=ta>Tamil</option><option value=te>Telugu</option><option value=th>Thai</option><option value=tr>Turkish</option><option value=uk>Ukrainian</option><option value=ur>Urdu</option><option value=vi>Vietnamese</option><option value=cy>Welsh</option><option value=yi>Yiddish</option></select>'
     toolbar.innerHTML = toolbar.innerHTML + ' Output Langauge: <select id="selOutLang" tabindex=0><option SELECTED value=ES>Spanish</option><option value=en>English</option><option value=ru>Russian</option><option value=separator disabled>&#8212;</option><option value=af>Afrikaans</option><option value=sq>Albanian</option><option value=ar>Arabic</option><option value=hy>Armenian</option><option value=az>Azerbaijani</option><option value=eu>Basque</option><option value=be>Belarusian</option><option value=bn>Bengali</option><option value=bs>Bosnian</option><option value=bg>Bulgarian</option><option value=ca>Catalan</option><option value=ceb>Cebuano</option><option value=zh-CN>Chinese (Simplified)</option><option value=zh-TW>Chinese (Traditional)</option><option value=hr>Croatian</option><option value=cs>Czech</option><option value=da>Danish</option><option value=nl>Dutch</option><option value=en>English</option><option value=eo>Esperanto</option><option value=et>Estonian</option><option value=tl>Filipino</option><option value=fi>Finnish</option><option value=fr>French</option><option value=gl>Galician</option><option value=ka>Georgian</option><option value=de>German</option><option value=el>Greek</option><option value=gu>Gujarati</option><option value=ht>Haitian Creole</option><option value=iw>Hebrew</option><option value=hi>Hindi</option><option value=hmn>Hmong</option><option value=hu>Hungarian</option><option value=is>Icelandic</option><option value=id>Indonesian</option><option value=ga>Irish</option><option value=it>Italian</option><option value=ja>Japanese</option><option value=jw>Javanese</option><option value=kn>Kannada</option><option value=km>Khmer</option><option value=ko>Korean</option><option value=lo>Lao</option><option value=la>Latin</option><option value=lv>Latvian</option><option value=lt>Lithuanian</option><option value=mk>Macedonian</option><option value=ms>Malay</option><option value=mt>Maltese</option><option value=mr>Marathi</option><option value=no>Norwegian</option><option value=fa>Persian</option><option value=pl>Polish</option><option value=pt>Portuguese</option><option value=ro>Romanian</option><option value=ru>Russian</option><option value=sr>Serbian</option><option value=sk>Slovak</option><option value=sl>Slovenian</option><option value=es>Spanish</option><option value=sw>Swahili</option><option value=sv>Swedish</option><option value=ta>Tamil</option><option value=te>Telugu</option><option value=th>Thai</option><option value=tr>Turkish</option><option value=uk>Ukrainian</option><option value=ur>Urdu</option><option value=vi>Vietnamese</option><option value=cy>Welsh</option><option value=yi>Yiddish</option></select>'
-    toolbar.innerHTML = toolbar.innerHTML + ' Progression: <input id="prog" type="range" min="1" value="75" max="1000">'
+    toolbar.innerHTML = toolbar.innerHTML + ' Progression: <input id="prog" type="range" min="1" value="' + prog + '" max="1000">'
     toolbar.innerHTML = toolbar.innerHTML + ' <input id="revButton" type="checkbox">Reverse</input>'
     toolbar.innerHTML = toolbar.innerHTML + '<button id="goButton" type="button">Go!</button>'
     
@@ -104,10 +114,6 @@ function addToolBar() {
 }
 
 function startLookup() {
-    // load progress
-    var progress = JSON.parse(localStorage["progression"])
-    if(progress != undefined)
-        //use default progress
         
     inLang = document.getElementById('selInLang').value
     outLang = document.getElementById('selOutLang').value
@@ -121,10 +127,8 @@ function startLookup() {
     document.getElementById('prog').value = prog
     document.getElementById('revButton').checked = rev
     
-      // save progress
-    localStorage["progression"] = JSON.stringify(prog) 
-    
     DOC_SAVE = $('body').clone()[0]
+    localStorage.progress = prog
         
     var numSwaps = Math.ceil(((prog / 1000) * (prog / 1000)) * sortedArr.length)
     
@@ -133,9 +137,7 @@ function startLookup() {
         numSwaps = Math.ceil((1-((prog / 1000) * (prog / 1000))) * sortedArr.length)
         
     }
-    
-	console.log(numSwaps + " " + Math.ceil((1 - ((prog / 1000) * (prog / 1000))) * sortedArr.length))
-    
+        
     topPhraseArr = new Array(numSwaps)
 	finalPhraseArr = new Array(numSwaps)
 	translationArr = new Array(numSwaps)
@@ -225,7 +227,7 @@ function replaceTextNodes(node, phrase, tPhrase, idx) {
     var newSpan = '<span class="transInsert' + idx + '" style="text-decoration: underline" onmouseover="this.style.backgroundColor=&quot;yellow&quot;\" onmouseout="this.style.backgroundColor=null" onclick="$(&quot;#transDialog' + idx + '&quot;).dialog({'
     newSpan = newSpan + 'modal: true, buttons: {' 
     newSpan = newSpan + '&quot;I did not know this word&quot;: function() {'
-   newSpan = newSpan + 'Array.prototype.slice.call(document.getElementsByClassName(&quot;transInsert' + idx + '&quot;), 0).forEach(function (i) { i.style.color = \'red\'; i.innerHTML=\'' + phrase + '\'; });'
+   newSpan = newSpan + 'document.getElementById(\'prog\').value=&quot;' + (prog - LOSS) + '&quot;; localStorage.progress=' + (prog - LOSS) + '; Array.prototype.slice.call(document.getElementsByClassName(&quot;transInsert' + idx + '&quot;), 0).forEach(function (i) { i.style.color = \'red\'; i.innerHTML=\'' + phrase + '\'; });'
    newSpan = newSpan + '$(this).dialog(&quot;close&quot;) },'
     newSpan = newSpan + 'Cancel: function() { $(this).dialog(&quot;close&quot;) }'
     newSpan = newSpan + '}'
@@ -283,7 +285,6 @@ function contentMine(chosenWords){
   //  for(i in sortablePhrases)
         //console.log(sortablePhrases[i][0] + " : " + sortablePhrases[i][1])
     
-    console.log(sortable)
     
     for (var ii = 0; ii + 5 < sortable.length; ii += 5) {
      
@@ -298,8 +299,7 @@ function contentMine(chosenWords){
         
     }
     
-    console.log(sortable)
-    
+
     
     return sortable
 }
